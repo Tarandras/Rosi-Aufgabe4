@@ -50,8 +50,8 @@ class RosiBeispiel extends Rosi {
           fahrPosition_X = es.liesWert(0);
           fahrPosition_XY = es.liesWert(-45);
           // negativ runden!!!
-          if (startPosition_X == fahrPosition_X && startPosition_Y == fahrPosition_Y
-              && startPosition_XY == fahrPosition_XY) {
+          if (startPosition_X / 3 == fahrPosition_X / 3 && startPosition_Y / 3 == fahrPosition_Y / 3
+              && startPosition_XY / 3 == fahrPosition_XY / 3) {
             System.out.print("Dauer: " + (laufzeit() - laufzeit));
             laufzeit += laufzeit();
           }
@@ -63,6 +63,7 @@ class RosiBeispiel extends Rosi {
           plot();
           // zeichnet punkt auf Display
         }
+        programmBeenden();
       }
     };
 
