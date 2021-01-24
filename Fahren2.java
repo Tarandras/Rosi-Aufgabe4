@@ -35,31 +35,31 @@ class RosiBeispiel extends Rosi {
     fertig();
 
     Prozess pr = new Prozess(10) {
-      int startPosition_Y = es.liesWert(90);
-      int startPosition_X = es.liesWert(0);
-      int startPosition_XY = es.liesWert(-45);
-      int fahrPosition_Y = es.liesWert(90);
-      int fahrPosition_X = es.liesWert(0);
-      int fahrPosition_XY = es.liesWert(-45);
-      long taskBeendenNach = 60000;
-      Long laufzeit = laufzeit();
+      // int startPosition_Y = y();
+      int startPosition_X = x();
+      long taskBeendenNach = 20000;
+      Long laufzeit = (long) 0;
+      int schalterStartposition = 0;
 
       public void Aktion() {
+        /*
+         * System.out.print("startPosition_Y: " + y()); y 250
+         */
         for (Long i = laufzeit(); i < taskBeendenNach; i = laufzeit()) {
-          fahrPosition_Y = es.liesWert(90);
-          fahrPosition_X = es.liesWert(0);
-          fahrPosition_XY = es.liesWert(-45);
           // negativ runden!!!
-          if (startPosition_X / 3 == fahrPosition_X / 3 && startPosition_Y / 3 == fahrPosition_Y / 3
-              && startPosition_XY / 3 == fahrPosition_XY / 3) {
-            System.out.print("Dauer: " + (laufzeit() - laufzeit));
+          if (startPosition_X / 3 == x() / 3 && 240 < y() && schalterStartposition == 0) {
+            System.out.println("Dauer: " + (laufzeit() - laufzeit));
             laufzeit += laufzeit();
+            schalterStartposition++;
+            warten(10);
+          }
+          if (-200 < y() && schalterStartposition != 0) {
+            schalterStartposition = 0;
           }
           if (lsl.hell())
             rechts(150);
           if (lsr.hell())
             links(150);
-          System.out.println(laufzeit());
           plot();
           // zeichnet punkt auf Display
         }
