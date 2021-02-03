@@ -3,10 +3,11 @@
 //  Aufgabe 4
 /////////////////////////////////////////
 
-import java.awt.*;
-import java.io.*;
-import java.net.*;
-import java.lang.Math;
+//import java.awt.*;
+//import java.io.*;
+//import java.net.*;
+//import java.util.PrimitiveIterator.OfLong;
+//import java.lang.Math;
 
 public class Fahren2 {
   public static void main(String[] args) {
@@ -15,17 +16,19 @@ public class Fahren2 {
 }
 
 class RosiBeispiel extends Rosi {
-  LichtSensor lsl, lsr, lsm;
 
   public void los() {
-    programmBezeichnung = "Fahren in einer Linie mit zwei Sensoren";
 
+    programmBezeichnung = "Fahren in einer Linie mit zwei Sensoren";
+    LichtSensor lsl, lsr;
     EntfernungsSensor es = new EntfernungsSensor();
+
     es.positionieren(0, 0);
+
     lsl = new LichtSensor(1);
-    lsl.positionieren(20, 10);
+    lsl.positionieren(20, 23);
     lsr = new LichtSensor(2);
-    lsr.positionieren(20, -10);
+    lsr.positionieren(20, -23);
 
     hintergrundBild("linie");
     positionieren(-40, 250, 0);
@@ -34,44 +37,75 @@ class RosiBeispiel extends Rosi {
 
     fertig();
 
-    Prozess pr = new Prozess(10) {
-      // int startPosition_Y = y();
-      int startPosition_X = x();
-      long taskBeendenNach = 20000;
-      Long laufzeit = (long) 0;
-      int schalterStartposition = 0;
+    Prozess pr = new Prozess(100) {
+      int geschwindigkeit = 0;
+      int startPosition_X = 0;
+      Long summeRundenZeiten = (long) 0;
+      int schalterStartposition = 1;
+      int rundenZahl = 0;
+      long rundenZeit;
 
       public void Aktion() {
-        /*
-         * System.out.print("startPosition_Y: " + y()); y 250
-         */
-        for (Long i = laufzeit(); i < taskBeendenNach; i = laufzeit()) {
-          // negativ runden!!!
-          if (startPosition_X / 3 == x() / 3 && 240 < y() && schalterStartposition == 0) {
-            System.out.println("Dauer: " + (laufzeit() - laufzeit));
-            laufzeit += laufzeit();
-            schalterStartposition++;
-            warten(10);
-          }
-          if (-200 < y() && schalterStartposition != 0) {
-            schalterStartposition = 0;
-          }
-          if (lsl.hell())
-            rechts(150);
-          if (lsr.hell())
-            links(150);
-          plot();
-          // zeichnet punkt auf Display
+        fahren(geschwindigkeit);
+        geschwindigkeit = goFast(geschwindigkeit);
+        int boost = 75;// zwischen 0 - 100
+        if (lsr.hell()) {
+          linksDrehen(boost);
+          // links(boost);
         }
-        programmBeenden();
+
+        if (lsl.hell()) {
+          rechtsDrehen(boost);
+          // rechts(boost);
+        }
+
+        if (-200 > y() && -300 > x()) {
+          schalterStartposition = 0;
+        }
+        if (schalterStartposition == 0 && startPosition_X == x() / 10) {
+          schalterStartposition++;
+          rundenZahl++;
+          rundenZeit = laufzeit() - summeRundenZeiten;
+          System.out.println("boost, maxSpeed, RundenZeit: " + boost + "\t" + geschwindigkeit + "\t" + rundenZeit);
+          summeRundenZeiten += rundenZeit; // um möglichst exakt zu sein, weit oben
+        }
+        int taktgeber = 100;
+        int lauftakt = (int) (laufzeit());
+        if (lauftakt % taktgeber == 0) {
+          display.clear(true);
+          text("Geschwindigkeit: " + (geschwindigkeit), 5, 60);
+        }
+        if (rundenZahl == 1) {
+          // if (rundenZahl == 1 || lauftakt > 750000) {
+          programmBeenden();
+        }
+
       }
     };
-
     pr.starten();
-    fahren(200);
   }
 
-  public void zeichnen(Graphics2D g) {
+  public static int goFast(int currentSpeed) {
+    int maxSpeed = 300;
+    if (currentSpeed >= maxSpeed) {
+      return maxSpeed;
+    } else {
+      currentSpeed = 1 + currentSpeed * 110 / 100;
+      return currentSpeed;
+    }
+  }
 
+  public static int goSlow(int currentSpeed) {
+    if (currentSpeed * 90 / 100 <= 20) {
+      if (currentSpeed - 20 <= 0) {
+        return 20;
+      } else {
+        currentSpeed = currentSpeed - 8;
+        return currentSpeed;
+      }
+    } else {
+      currentSpeed = currentSpeed * 90 / 100;
+      return currentSpeed;
+    }
   }
 }
